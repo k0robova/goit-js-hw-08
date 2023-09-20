@@ -1,73 +1,46 @@
 const form = document.querySelector('.feedback-form');
-form.addEventListener('input', onInputForm);
+const emailInput = form.querySelector('input[name="email"]');
+const messageInput = form.querySelector('textarea[name="message"]');
+const STORAGE_KEY = 'feedback-form-state';
 
-function onInputForm(event) {
-  event.preventDefault();
+form.addEventListener('input', updateLocalStorage);
+form.addEventListener('submit', handleSubmit);
 
-  // Отримуємо всі поля форми за їх іменами
-  const emailInput = form.querySelector('input[name="email"]');
-  const messageInput = form.querySelector('textarea[name="message"]');
+populateFormFields();
 
-  // Отримуємо поточні значення полів
-  const emailValue = emailInput.value;
-  const messageValue = messageInput.value;
+function updateLocalStorage() {
+  const formData = {
+    email: emailInput.value,
+    message: messageInput.value,
+  };
 
-  if (emailValue.trim() !== '' && messageValue.trim() !== '') {
-    const formData = {
-      email: emailValue,
-      message: messageValue,
-    };
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
-  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
-// Під час завантаження сторінки перевіряємо стан сховища
-window.addEventListener('load', function () {
-  // Отримуємо дані із локального сховища
-  const storedFormData = localStorage.getItem('feedback-form-state');
+function populateFormFields() {
+  const storedFormData = localStorage.getItem(STORAGE_KEY);
 
-  // Перевіряємо, чи є збережені дані у сховищі
   if (storedFormData) {
-    // Розпаковуємо дані зі сховища
     const formData = JSON.parse(storedFormData);
 
-    // Отримуємо всі поля форми за їх іменами
-    const emailInput = form.querySelector('input[name="email"]');
-    const messageInput = form.querySelector('textarea[name="message"]');
-
-    // Заповнюємо поля форми зі збереженими даними
     emailInput.value = formData.email;
     messageInput.value = formData.message;
   }
-});
-
-// Під час сабміту форми очищуй сховище і поля форми, а також виводь у консоль об'єкт з полями email, message та їхніми поточними значеннями.
-const btnSubmit = document.querySelector('button');
-btnSubmit.addEventListener('submit', onBtnSubmit);
-function onBtnSubmit(event) {
-  event.preventDefault();
-  event.currentTarget.reset();
 }
 
-// const formEl = document.querySelector('.login-form');
-// formEl.addEventListener('submit', onSubmit);
+function handleSubmit(event) {
+  event.preventDefault();
+  localStorage.removeItem(STORAGE_KEY);
 
-// function onSubmit(event) {
-//   event.preventDefault();
+  const emailValue = emailInput.value;
+  const messageValue = messageInput.value;
 
-//   const { email, password } = event.currentTarget.elements;
+  const formObject = {
+    email: emailValue,
+    message: messageValue,
+  };
+  console.log(formObject);
 
-//   if (email.value === '' || password.value === '') {
-//     alert('Всі поля повинні бути заповнені!');
-//   } else {
-//     console.log(email.value);
-//     console.log(password.value);
-//   }
-
-//   const data = {
-//     userEmail: email.value,
-//     userPassword: password.value,
-//   };
-//   console.log(data);
-//   event.currentTarget.reset();
-// }
+  emailInput.value = '';
+  messageInput.value = '';
+}
