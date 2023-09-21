@@ -1,9 +1,11 @@
+import throttle from 'lodash.throttle';
+const STORAGE_KEY = 'feedback-form-state';
+
 const form = document.querySelector('.feedback-form');
 const emailInput = form.querySelector('input[name="email"]');
 const messageInput = form.querySelector('textarea[name="message"]');
-const STORAGE_KEY = 'feedback-form-state';
 
-form.addEventListener('input', updateLocalStorage);
+form.addEventListener('input', throttle(updateLocalStorage, 500));
 form.addEventListener('submit', handleSubmit);
 
 populateFormFields();
